@@ -1,115 +1,146 @@
-# main.py
-from models.student import Student, Undergraduate, Graduate
+from models.student import Student,Undergraduate,Graduate
 from models.course import Course
 
 def main():
-    students = []
-    courses = []
-
+    students=[]
+    courses=[]
+    
     while True:
-        print("\n--- Student Course Management System ---")
+        print("---Student Course Management System---")
         print("1. Add Student")
         print("2. Add Course")
         print("3. Enroll Student in Course")
-        print("4. List Students in a Course")
-        print("5. Update Course")
-        print("6. Remove Student from Course")
-        print("7. List All Courses")
-        print("8. List All Students")
+        print("4. Set Grade for Student in Course")
+        print("5. List Students in a Course")
+        print("6. Show Student Transcript")
+        print("7. Update Course")
+        print("8. Remove Student from Course")
+        print("9. List All Courses")
+        print("10. List All Students")
         print("0. Exit")
-
-        choice = input("Select an option: ")
-
-        if choice == "1":
-            # Add student
-            name = input("Name: ")
-            sid = input("Student ID: ")
-            gender = input("Gender (male/female): ")
-            level = input("Level (undergraduate/graduate): ").lower()
-            field = input("Field of study: ")
-
-            if level == "undergraduate":
-                student = Undergraduate(name, sid, field)
-            else:
-                student = Graduate(name, sid, field)
-            student.gender = gender  # validate gender
-            students.append(student)
-            print(f"✔ Student added: {student}")
-
+        
+        choice = input("Select an optiom").strip()
+        
+        if choice =="1":
+            name = input("Name: ").strip()
+            sid = input("Student ID: ").strip()
+            gender = input("Gender (male/female): ").strip().lower()
+            email = input("Email: ").strip()
+            level = input("Level (undergraduate/graduate): ").strip().lower()
+            field = input("Field of study: ").strip()
+            
+            try:
+                if level == "undergraduate":
+                    student = Undergraduate(name, sid, gender, email, field)
+                else:
+                    student = Graduate(name, sid, gender, email, field)
+                students.append(student)
+                print(f"Student added: {student}")
+            except ValueError as e:
+                print(f" Error: {e}")
+                
+        
         elif choice == "2":
-            # Add course
-            title = input("Course title: ")
-            cid = input("Course ID: ")
-            course = Course(title, cid)
-            courses.append(course)
-            print(f"✔ Course added: {course.title} ({course.course_id})")
+            title = input("Course title: ").strip()
+            cid = input("Course ID: ").strip()
+            try:
+                course = Course(title, cid)
+                courses.append(course)
+                print(f"Course added: {course.title} ({course.course_id})")
+            except ValueError as e:
+                print(f"Error: {e}")
 
         elif choice == "3":
-            # Enroll student
-            sid = input("Student ID: ")
-            cid = input("Course ID: ")
+            sid = input("Student ID: ").strip()
+            cid = input("Course ID: ").strip()
             student = next((s for s in students if s.student_id == sid), None)
             course = next((c for c in courses if c.course_id == cid), None)
             if student and course:
                 course.enroll(student)
             else:
-                print("⚠ Student or Course not found.")
+                print("Student or Course not found.")
 
         elif choice == "4":
-            # List students in a course
-            cid = input("Course ID: ")
+            sid = input("Student ID: ").strip()
+            cid = input("Course ID: ").strip()
+            try:
+                grade = float(input("Grade (0-100): ").strip())
+            except ValueError:
+                print("Grade must be a number.")
+                continue
+
+            student = next((s for s in students if s.student_id == sid), None)
             course = next((c for c in courses if c.course_id == cid), None)
-            if course:
-                print(f"Students in {course.title}:")
-                course.list_students()
+            if student and course:
+                try:
+                    course.set_grade(student, grade)
+                except ValueError as e:
+                    print(f" {e}")
             else:
-                print("⚠ Course not found.")
+                print("Student or Course not found.")
 
         elif choice == "5":
-            # Update course
-            cid = input("Course ID to update: ")
+            cid = input("Course ID: ").strip()
+            course = next((c for c in courses if c.course_id == cid), None)
+            if course:
+                course.list_students()
+            else:
+                print("Course not found.")
+
+        elif choice == "6":
+            sid = input("Student ID: ").strip()
+            student = next((s for s in students if s.student_id == sid), None)
+            if student:
+                student.transcript()
+            else:
+                print(" Student not found.")
+
+        elif choice == "7":
+            
+            cid = input("Course ID to update: ").strip()
             course = next((c for c in courses if c.course_id == cid), None)
             if course:
                 new_title = input("New title (leave blank to skip): ").strip()
-                kwargs = {}
                 if new_title:
-                    kwargs["title"] = new_title
-                course.update_course(**kwargs)
+                    course.update_course(title=new_title)
+                else:
+                    print("No changes made.")
             else:
-                print("⚠ Course not found.")
+                print("Course not found.")
 
-        elif choice == "6":
-            # Remove student from course
-            sid = input("Student ID: ")
-            cid = input("Course ID: ")
+        elif choice == "8":
+            
+            sid = input("Student ID: ").strip()
+            cid = input("Course ID: ").strip()
             student = next((s for s in students if s.student_id == sid), None)
             course = next((c for c in courses if c.course_id == cid), None)
             if student and course:
                 course.remove_student(student)
             else:
-                print("⚠ Student or Course not found.")
+                print(" Student or Course not found.")
 
-        elif choice == "7":
-            # List all courses
+        elif choice == "9":
+           
             if not courses:
                 print("No courses available.")
             else:
                 for c in courses:
-                    print(f"{c.course_id}: {c.title}")
+                    print(f"{c.course_id}: {c.title} ({len(c.enrolled_students)} students)")
 
-        elif choice == "8":
-            # List all students
+        elif choice == "10":
+        
             if not students:
                 print("No students available.")
             else:
                 for s in students:
-                    print(s)
+                    print(f"{s} - Email: {s.email}")
 
         elif choice == "0":
             print("Exiting...")
             break
+
         else:
-            print("Invalid option. Try again.")
+            print(" Invalid option. Try again.")
 
 if __name__ == "__main__":
     main()
