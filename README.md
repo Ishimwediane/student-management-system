@@ -136,12 +136,11 @@ Contributions are welcome! Please fork the repository and submit a pull request.
 
 ---
 
-## License
 
-This project is licensed under the MIT License.
-
----
 
 ## Contact
 
 For questions or feedback, please contact [ishimwediane400@gmail.com]
+
+## demo video(screen recording)
+ - https://drive.google.com/file/d/1Z6IDKblpJaY4GK0eY42cLaYaffbqA0zU/view?usp=sharing
