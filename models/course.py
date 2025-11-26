@@ -1,84 +1,95 @@
+from abc import ABC, abstractmethod
 from .student import Student
+from .enrollment import Enrollment
 
 class Course:
-    def __init__(self, title, course_id):
-        self._course_id = course_id
+    def __init__(self, title, course_id, allowed_levels=None, allowed_fields=None):
         self._title = title
-        self.enrolled_students = []
-
-    @property
-    def course_id(self):
-        return self._course_id
+        self._course_id = course_id
+        self.enrollments = []
+        self.allowed_levels = allowed_levels if allowed_levels else ["undergraduate", "graduate"]
+        self.allowed_fields = allowed_fields if allowed_fields else "all"
 
     @property
     def title(self):
         return self._title
-
     @title.setter
-    def title(self, new_title):
-        if not new_title or not new_title.strip():
+    def title(self, value):
+        if not value.strip():
             raise ValueError("Course title is required")
-        self._title = new_title
+        self._title = value
 
-    # Enroll student
+    @property
+    def course_id(self):
+        return self._course_id
+    
+    @property
+    def allowed_fields(self):
+        return self._allowed_levels
+
+    @allowed_levels.setter
+    def allowed_levels(self, value):
+        if not value.replace(" ", "").isalpha():
+           raise ValueError("Name can only contain letters and spaces")
+        self._allowed_levels = value
+
+
+
     def enroll(self, student: Student):
-        if student not in self.enrolled_students:
-            self.enrolled_students.append(student)
-            student.course_grades[self.course_id] = None
-            print(f"{student.name} enrolled in {self.title}")
-        else:
-            print(f"{student.name} is already enrolled in {self.title}")
+        if student.level not in self.allowed_levels:
+            print(f"{student.name} cannot enroll: level not allowed")
+            return
+        if self.allowed_fields != "all" and student.field_of_studies not in self.allowed_fields:
+            print(f"{student.name} cannot enroll: field not allowed")
+            return
+        if any(en.student == student for en in self.enrollments):
+            print(f"{student.name} already enrolled")
+            return
+        enrollment = Enrollment(student)
+        self.enrollments.append(enrollment)
+        student.course_grades[self.course_id] = None
+        print(f"{student.name} enrolled in {self.title}")
 
-    # Remove student
     def remove_student(self, student: Student):
-        if student in self.enrolled_students:
-            self.enrolled_students.remove(student)
-            student.course_grades.pop(self.course_id, None)
-            print(f"{student.name} removed from {self.title}")
-        else:
-            print(f"{student.name} is not enrolled in {self.title}")
+        for en in self.enrollments:
+            if en.student == student:
+                self.enrollments.remove(en)
+                student.course_grades.pop(self.course_id, None)
+                print(f"{student.name} removed from {self.title}")
+                return
+        print(f"{student.name} not enrolled in {self.title}")
 
-    # Set grade
     def set_grade(self, student: Student, grade):
-        if student not in self.enrolled_students:
-            print(f"{student.name} is not enrolled in {self.title}")
+        enrollment = next((en for en in self.enrollments if en.student == student), None)
+        if not enrollment:
+            print(f"{student.name} not enrolled in {self.title}")
             return
-        if grade < 0 or grade > 100:
-            raise ValueError("Grade must be between 0 and 100")
+        if not (0 <= grade <= 100):
+            raise ValueError("Grade must be 0-100")
+        enrollment.grade = grade
         student.course_grades[self.course_id] = grade
-        print(f"Set grade {grade} for {student.name} in {self.title}")
+        print(f"Grade {grade} set for {student.name} in {self.title}")
 
-    # Course average
     def average_grade(self):
-        grades = [
-            student.course_grades[self.course_id]
-            for student in self.enrolled_students
-            if student.course_grades[self.course_id] is not None
-        ]
-        if not grades:
-            return 0
-        return sum(grades) / len(grades)
+        grades = [en.grade for en in self.enrollments if en.grade is not None]
+        return sum(grades) / len(grades) if grades else 0
 
-    # List students
     def list_students(self):
-        print(f"\nStudents enrolled in {self.title}:")
-        if not self.enrolled_students:
-            print("No students yet.")
+        print(f"\nStudents in {self.title}:")
+        if not self.enrollments:
+            print("No students yet")
             return
-        for student in self.enrolled_students:
-            grade = student.course_grades[self.course_id]
-            grade_display = grade if grade is not None else "Not yet graded"
-            print(f"{student.name} - Grade: {grade_display}")
+        for en in self.enrollments:
+            print(en)
 
-    # Update course title
     def update_course(self, **kwargs):
         for key, value in kwargs.items():
-            attribute_name = f"_{key}"
-            if hasattr(self, attribute_name):
-                setattr(self, attribute_name, value)
+            attr = f"_{key}"
+            if hasattr(self, attr):
+                setattr(self, attr, value)
             else:
-                print(f"Attribute '{key}' does not exist in Course")
-        print(f"Course {self.course_id} updated successfully")
+                print(f"Attribute '{key}' not found")
+        print(f"Course {self.course_id} updated")
 
     def __str__(self):
-        return f"{self.title} ({self.course_id}) - {len(self.enrolled_students)} students"
+        return f"{self.title} ({self.course_id}) - {len(self.enrollments)} students"
