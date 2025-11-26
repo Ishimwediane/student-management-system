@@ -5,7 +5,7 @@ class Student(ABC):
     Abstract Base Class for a Student
     """
     def __init__(self, name, student_id, gender, email, level="undergraduate"):
-        self.name = name
+        self._name = name
         self.student_id = student_id
         self.gender = gender
         self.email = email
@@ -15,14 +15,14 @@ class Student(ABC):
     # Name
     @property
     def name(self):
-        return self._name
+        return self.name
     @name.setter
     def name(self, value):
         if not value.strip():
             raise ValueError("Name cannot be empty")
         if not value.replace(" ", "").isalpha():
             raise ValueError("Name can only contain letters and spaces")
-        self._name = value
+        self.name = value
 
     # Gender
     @property
@@ -84,7 +84,8 @@ class Student(ABC):
             return "Pass"
         else:
             return "Fail"
-
+        
+    #Transcript
     def transcript(self):
         print(f"\nTranscript - {self.name} ({self.student_id})")
         print("-" * 45)

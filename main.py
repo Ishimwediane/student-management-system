@@ -42,6 +42,11 @@ def main():
                     student = Graduate(name, student_id, gender, email, field_of_study)
                 else:
                     raise ValueError("Level must be 'undergraduate' or 'graduate'")
+                
+                if student.student_id in students:
+                    print("Student ID already exists!")
+                    continue
+             
 
                 students[student_id] = student     
                 print(f"Student added: {student}")
@@ -59,13 +64,25 @@ def main():
                     print("Course ID already exists!")
                     continue
 
-                # Allowed levels
-                levels_input = input("Allowed levels (comma separated, leave blank for both): ").strip()
-                allowed_levels = [lvl.strip().lower() for lvl in levels_input.split(",") if lvl.strip()] or None
+                allowed_levels_input = input("Allowed Levels (comma separated, leave blank for both): ").strip()
+                if not allowed_levels_input:
+                   allowed_levels = ["undergraduate", "graduate"]
+                else:
+                   allowed_levels = [lvl.strip().lower() for lvl in allowed_levels_input.split(",")]
+    
+                   for lvl in allowed_levels:
+                       if lvl not in ("undergraduate", "graduate"):
+                          print(f"Invalid level '{lvl}'! Only 'undergraduate' and 'graduate' allowed.")
+                          allowed_levels = ["undergraduate", "graduate"]
+                          break
 
-                # Allowed fields
-                fields_input = input("Allowed fields (comma separated, leave blank for all): ").strip()
-                allowed_fields = [f.strip() for f in fields_input.split(",") if f.strip()] or None
+                allowed_fields_input = input("Allowed Fields (comma separated, leave blank for all): ").strip()
+                if not allowed_fields_input:
+                   allowed_fields = "all"
+                else:
+                   allowed_fields = [field.strip() for field in allowed_fields_input.split(",")]
+
+
 
                 course = Course(title, course_id, allowed_levels, allowed_fields)
                 courses[course_id] = course

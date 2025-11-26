@@ -6,7 +6,7 @@ class Enrollment:
     """
     def __init__(self, student: Student):
         self.student = student
-        self.grade = None  # grade can be set later
+        self.grade = None
 
     def __str__(self):
         grade_display = self.grade if self.grade is not None else "Not graded"
