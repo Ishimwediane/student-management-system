@@ -1,18 +1,17 @@
 from abc import ABC, abstractmethod
 from .student import Student
 from .enrollment import Enrollment
+from .enums import Level, FieldOfStudy
 
 class Course:
     def __init__(self, title, course_id, allowed_levels=None, allowed_fields=None):
         self._title = title
         self._course_id = course_id
         self.enrollments = []
-        # Default allowed levels: undergraduate and graduate
-        self._allowed_levels = allowed_levels if allowed_levels else ["undergraduate", "graduate"]
-        # Default allowed fields: all fields
-        self._allowed_fields = allowed_fields if allowed_fields else "all"
+        self._allowed_levels = allowed_levels 
+        self._allowed_fields = allowed_fields 
 
-    # --- Title property ---
+    # Title property 
     @property
     def title(self):
         return self._title
@@ -21,14 +20,16 @@ class Course:
     def title(self, value):
         if not value.strip():
             raise ValueError("Course title is required")
+        if not value.replace(" ", "").isalpha():
+            raise ValueError("Course title can only contain letters and spaces")
         self._title = value
 
-    # --- Course ID property ---
+    # Course 
     @property
     def course_id(self):
         return self._course_id
 
-    # --- Allowed Levels property ---
+    # Allowed Levels
     @property
     def allowed_levels(self):
         return self._allowed_levels
@@ -40,7 +41,7 @@ class Course:
         else:
             raise ValueError("allowed_levels must be a list of strings containing letters only")
 
-    # --- Allowed Fields property ---
+    #  Allowed Fields property 
     @property
     def allowed_fields(self):
         return self._allowed_fields

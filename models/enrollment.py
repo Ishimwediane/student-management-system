@@ -10,4 +10,4 @@ class Enrollment:
 
     def __str__(self):
         grade_display = self.grade if self.grade is not None else "Not graded"
-        return f"{self.student.name} - Grade: {grade_display}"
+        return f"{self.student._name} ({self.student.field_of_studies.value}) - Grade: {grade_display}"
