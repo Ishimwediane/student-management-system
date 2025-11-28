@@ -4,12 +4,14 @@ from .enrollment import Enrollment
 from .enums import Level, FieldOfStudy
 
 class Course:
-    def __init__(self, title, course_id, allowed_fields:list[FieldOfStudy],allowed_levels:list[Level]=Level.UNDERGRADUATE):
+    def __init__(self, title, course_id, allowed_fields: list[FieldOfStudy], allowed_levels: list[Level] = None):
+         
+        self.enrollments = []
+      
         self._title = title
         self._course_id = course_id
-        self.enrollments = []
-        self._allowed_levels = allowed_levels 
-        self._allowed_fields = allowed_fields 
+        self.allowed_levels = allowed_levels if allowed_levels is not None else [Level.UNDERGRADUATE, Level.GRADUATE]
+        self.allowed_fields = allowed_fields if allowed_fields else list(FieldOfStudy)
 
     # Title property 
     @property
@@ -36,8 +38,11 @@ class Course:
 
     @allowed_levels.setter
     def allowed_levels(self, value):
-        if not all(isinstance(value, Level)for v in value):
+        
+        if not isinstance(value, list):
             raise ValueError("allowed_levels must be a list")
+        if not all(isinstance(v, Level) for v in value):
+            raise ValueError("All items in allowed_levels must be Level enum instances")
         self._allowed_levels = value
 
     #  Allowed Fields property 
@@ -47,38 +52,46 @@ class Course:
 
     @allowed_fields.setter
     def allowed_fields(self, value):
-        if not all(isinstance(v, FieldOfStudy) for v in value):
+        # FIX: Check if value is a list first
+        if not isinstance(value, list):
             raise ValueError("allowed_fields must be a list")
+        if not all(isinstance(v, FieldOfStudy) for v in value):
+            raise ValueError("All items in allowed_fields must be FieldOfStudy enum instances")
         self._allowed_fields = value
 
 
-    # --- Enroll a student ---
+    #  Enroll a student 
     def enroll(self, student: Student):
         if student.level not in self.allowed_levels:
-            print(f"{student.name} cannot enroll: level '{student.level}' not allowed")
+            print(f"{student.name} cannot enroll: level '{student.level.value}' not allowed")
             return
-        if self.allowed_fields != "all" and student.field_of_studies not in self.allowed_fields:
-            print(f"{student.name} cannot enroll: field '{student.field_of_studies}' not allowed")
+       
+        if student.field_of_studies not in self.allowed_fields:
+            print(f"{student.name} cannot enroll: field '{student.field_of_studies.value}' not allowed")
             return
         if any(en.student == student for en in self.enrollments):
             print(f"{student.name} already enrolled")
             return
         enrollment = Enrollment(student)
         self.enrollments.append(enrollment)
-        student.course_grades[self.course_id] = None
+       
+        if not hasattr(student, '_course_grades'):
+            student._course_grades = {}
+        student._course_grades[self.course_id] = None
         print(f"{student.name} enrolled in {self.title}")
 
-    # --- Remove a student ---
+    # Remove a student 
     def remove_student(self, student: Student):
         for en in self.enrollments:
             if en.student == student:
                 self.enrollments.remove(en)
-                student.course_grades.pop(self.course_id, None)
+                if hasattr(student, '_course_grades'):
+                    student._course_grades.pop(self.course_id, None)
                 print(f"{student.name} removed from {self.title}")
                 return
         print(f"{student.name} not enrolled in {self.title}")
 
-    # --- Set a grade ---
+    # Set a grade 
     def set_grade(self, student: Student, grade):
         enrollment = next((en for en in self.enrollments if en.student == student), None)
         if not enrollment:
@@ -87,15 +100,17 @@ class Course:
         if not (0 <= grade <= 100):
             raise ValueError("Grade must be 0-100")
         enrollment.grade = grade
-        student.course_grades[self.course_id] = grade
+        if not hasattr(student, '_course_grades'):
+            student._course_grades = {}
+        student._course_grades[self.course_id] = grade
         print(f"Grade {grade} set for {student.name} in {self.title}")
 
-    # --- Calculate average grade ---
+    #  Calculate average grade 
     def average_grade(self):
         grades = [en.grade for en in self.enrollments if en.grade is not None]
         return sum(grades) / len(grades) if grades else 0
 
-    # --- List all students ---
+    # List all students
     def list_students(self):
         print(f"\nStudents in {self.title}:")
         if not self.enrollments:
@@ -104,7 +119,7 @@ class Course:
         for en in self.enrollments:
             print(en)
 
-    # --- Update course attributes ---
+    # Update course attributes 
     def update_course(self, **kwargs):
         for key, value in kwargs.items():
             attr = f"_{key}"
