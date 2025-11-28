@@ -4,7 +4,7 @@ from .enrollment import Enrollment
 from .enums import Level, FieldOfStudy
 
 class Course:
-    def __init__(self, title, course_id, allowed_levels=None, allowed_fields=None):
+    def __init__(self, title, course_id, allowed_fields:list[FieldOfStudy],allowed_levels:list[Level]=Level.UNDERGRADUATE):
         self._title = title
         self._course_id = course_id
         self.enrollments = []
@@ -36,10 +36,9 @@ class Course:
 
     @allowed_levels.setter
     def allowed_levels(self, value):
-        if isinstance(value, list) and all(isinstance(v, str) and v.replace(" ", "").isalpha() for v in value):
-            self._allowed_levels = value
-        else:
-            raise ValueError("allowed_levels must be a list of strings containing letters only")
+        if not all(isinstance(value, Level)for v in value):
+            raise ValueError("allowed_levels must be a list")
+        self._allowed_levels = value
 
     #  Allowed Fields property 
     @property
@@ -48,10 +47,10 @@ class Course:
 
     @allowed_fields.setter
     def allowed_fields(self, value):
-        # Can be a list of strings or "all"
-        if value != "all" and (not isinstance(value, list) or not all(isinstance(v, str) for v in value)):
-            raise ValueError("allowed_fields must be 'all' or a list of strings")
+        if not all(isinstance(v, FieldOfStudy) for v in value):
+            raise ValueError("allowed_fields must be a list")
         self._allowed_fields = value
+
 
     # --- Enroll a student ---
     def enroll(self, student: Student):

@@ -1,5 +1,7 @@
 from models.student import Student, Undergraduate, Graduate
 from models.course import Course
+from models.enums import Level, FieldOfStudy
+
 
 def main():
     students = {}   
@@ -31,22 +33,30 @@ def main():
 
             gender = input("Gender (male/female): ").strip()
             email = input("Email: ").strip()
-            level = input("Level (undergraduate/graduate): ").strip().lower()
-            field_of_study = input("Field of study: ").strip()
-           
+            print(f"avaibale levels:{[lvl.value for lvl in Level]}")
+            level = input("Level : ").strip().lower()
+            
+            try:
+                level_enum=Level(level)
+            except ValueError:
+                print(f"invalid level '{level}'.Must be one of {[lvl.value for lvl in Level]}")
+                continue
+                
+            print(f"avaibale fields:{[field.value for field in FieldOfStudy]}")
+            field_of_study = input("Field of study: ").strip().lower()
+            
+            try:
+                field_enum=FieldOfStudy(field_of_study)
+            except ValueError:
+                print(f"invalid field '{field_of_study}'.Must be one of {[field.value for field in FieldOfStudy]}")
+                continue          
+            
 
             try:
-                if level == "undergraduate":
+                if level_enum == Level.UNDERGRADUATE:
                     student = Undergraduate(name, student_id, gender, email, field_of_study)
-                elif level == "graduate":
-                    student = Graduate(name, student_id, gender, email, field_of_study)
                 else:
-                    raise ValueError("Level must be 'undergraduate' or 'graduate'")
-                
-                if student.student_id in students:
-                    print("Student ID already exists!")
-                    continue
-             
+                    student = Graduate(name, student_id, gender, email, field_of_study)         
 
                 students[student_id] = student     
                 print(f"Student added: {student}")
@@ -63,32 +73,34 @@ def main():
                 if course_id in courses:
                     print("Course ID already exists!")
                     continue
+                
+                print(f"available levels:{[lvl.value for lvl in Level]}")
+                level=input("allowed levels(comma separated,blank:all):").strip()
+                
+                try:
+                    level_enum=Level(level)
+                except ValueError:
+                    print(f"invalid level input")
+                    continue                    
+                
+                
+                print(f"available fields:{[field.value for field in FieldOfStudy]}")
+                field=input("allowed fields(comma separated,blank:all):").strip()
+                
+                try:
+                    field_enum=FieldOfStudy(field)
+                except ValueError:
+                    print(f"invalid field input")
+                    continue
 
-                allowed_levels_input = input("Allowed Levels (comma separated, leave blank for both): ").strip()
-                if not allowed_levels_input:
-                   allowed_levels = ["undergraduate", "graduate"]
-                else:
-                   allowed_levels = [lvl.strip().lower() for lvl in allowed_levels_input.split(",")]
-    
-                   for lvl in allowed_levels:
-                       if lvl not in ("undergraduate", "graduate"):
-                          print(f"Invalid level '{lvl}'! Only 'undergraduate' and 'graduate' allowed.")
-                          allowed_levels = ["undergraduate", "graduate"]
-                          break
+                
+                
 
-                allowed_fields_input = input("Allowed Fields (comma separated, leave blank for all): ").strip()
-                if not allowed_fields_input:
-                   allowed_fields = "all"
-                else:
-                   allowed_fields = [field.strip() for field in allowed_fields_input.split(",")]
-
-
-
-                course = Course(title, course_id, allowed_levels, allowed_fields)
+                course = Course(title, course_id, field_enum,level_enum)
                 courses[course_id] = course
                 print(f"Course added: {course.title} ({course.course_id})")
-                print(f"Allowed Levels: {course.allowed_levels}")
-                print(f"Allowed Fields: {course.allowed_fields}")
+                print(f"Allowed Levels: {[lvl.value for lvl in course.allowed_levels]}")
+                print(f"Allowed Fields: {[lvl.value for lvl in course.allowed_fields]}")
 
             except ValueError as e:
                 print(f"Error adding course: {e}")

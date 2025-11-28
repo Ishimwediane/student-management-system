@@ -117,16 +117,16 @@ class Student(ABC):
 # Subclasses
 class Undergraduate(Student):
     def __init__(self, name, student_id, gender, email, field_of_studies):
-        super().__init__(name, student_id, gender, email, level=Level.UNDERGRADUATE)
+        super().__init__(name, student_id, gender, email,field_of_studies, level=Level.UNDERGRADUATE)
         self._field_of_studies = field_of_studies
 
     def __str__(self):
-        return f"{self.name} - Undergraduate in {self._field_of_studies.value}"
+        return f"{self.name} - Undergraduate in {self._field_of_studies}"
 
 class Graduate(Student):
     def __init__(self, name, student_id, gender, email, field_of_studies):
-        super().__init__(name, student_id, gender, email, level=Level.GRADUATE)
+        super().__init__(name, student_id, gender, email,field_of_studies, level=Level.GRADUATE)
         self._field_of_studies = field_of_studies
         
     def __str__(self):
-        return f"{self.name} - Graduate in {self._field_of_studies.value}"
+        return f"{self.name} - Graduate in {self._field_of_studies}"
