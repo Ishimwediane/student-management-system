@@ -7,12 +7,12 @@ class Student(ABC):
     """
     def __init__(self, name, student_id, gender, email, field_of_studies: FieldOfStudy, level: Level = Level.UNDERGRADUATE):
         self._course_grades = {}
-        self._name = name
-        self._student_id = student_id
-        self._gender = gender
-        self._email = email
-        self._level = level
-        self._field_of_studies = field_of_studies
+        self.name = name
+        self.student_id = student_id
+        self.gender = gender
+        self.email = email
+        self.level = level
+        self.field_of_studies = field_of_studies
 
     # Name
     @property
