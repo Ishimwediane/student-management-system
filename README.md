@@ -1,306 +1,288 @@
 # Student Course Management System
 
-A **console-based Python application** to manage students, courses, enrollments, and grades.  
-This project demonstrates **Python fundamentals**, **OOP principles**, **modular programming**, and **data handling** in a simple CLI environment.
+A Python-based command-line application for managing students, courses, enrollments, and grades in an educational institution.
 
----
+## Features
 
-##  Features
+- **Student Management**: Add and manage undergraduate and graduate students
+- **Course Management**: Create courses with specific level and field requirements
+- **Enrollment System**: Enroll students in courses with eligibility validation
+- **Grading System**: Set and track student grades with automatic GPA calculation
+- **Academic Status**: Automatic classification based on performance (First Class, Second Upper, etc.)
+- **Transcripts**: Generate detailed student transcripts with all courses and grades
 
-### Student Management
-- Add **Undergraduate** or **Graduate** students with comprehensive validation:
-  - Names only accept letters and spaces
-  - Gender must be `male` or `female`
-  - Email must be valid (contain `@` and `.`)
-  - Unique student IDs
-  - Field of study specification
-
-### Course Management
-- Add **courses** with unique IDs
-- Optionally restrict courses to certain levels or fields
-- Update course titles
-- View all available courses
-
-### Enrollment & Grading
-- Enroll students in one or more courses
-- Automatic validation of level and field restrictions
-- Set **grades** for students per course (0–100)
-- Calculate **total average grades** per student
-- Remove students from courses
-
-### Academic Reporting
-- Show **student transcripts** including:
-  - All enrolled courses and grades
-  - Total average grade
-  - Academic status classification:
-    - **First Class** (70–100)
-    - **Second Upper** (60–69)
-    - **Second Lower** (50–59)
-    - **Pass** (40–49)
-    - **Fail** (0–39)
-- List all students in a course with their grades
-
-### User Interface
-- Simple **Command-Line Interface (CLI)**
-- Input validation and error handling
-- Clear menu system
-
----
-
-##  Project Structure
+## Project Structure
 
 ```
-student_course_management/
-│
+student-management-system/
+├── main.py                 # Application entry point
+├── cli/
+│   └── menu.py            # Command-line interface and menu system
 ├── models/
-│   ├── __init__.py
-│   ├── student.py          # Student, Undergraduate, Graduate classes with validation
-│   └── course.py  
-    └── enrollment.py         # Course and Enrollment classes
-│
-├── main.py                 # CLI application to interact with students and courses
-├── requirements.txt        # Python version and optional packages
-└── README.md              # Project documentation
+│   ├── student.py         # Student classes (Abstract, Undergraduate, Graduate)
+│   ├── course.py          # Course class with enrollment logic
+│   ├── enrollment.py      # Enrollment relationship class
+│   ├── enums.py           # Level and FieldOfStudy enumerations
+└── README.md              # This file
 ```
 
----
+## Installation
 
-##  Setup Instructions
-
-### 1. Install Python 3.11+
-
-Check your Python installation:
+1. **Clone the repository**:
 ```bash
-python --version
+git clone <repository-url>
+cd student-management-system
 ```
 
-### 2. Clone the repository
+2. **Requirements**: Python 3.10 or higher (uses type hints with `list[Type]` syntax)
 
-```bash
-git clone <your-repo-url>
-cd student_course_management
-```
+3. **No external dependencies required** - uses only Python standard library
 
-### 3. Install dependencies (if any)
+## Usage
 
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Run the application
-
+Run the application:
 ```bash
 python main.py
 ```
----
 
-##  Usage
-
-### Main Menu Options
+### Menu Options
 
 ```
---- Student Course Management System ---
-1. Add Student
-2. Add Course
-3. Enroll Student in Course
-4. Set Grade for Student in Course
-5. List Students in a Course
-6. Show Student Transcript
-7. Update Course
-8. Remove Student from Course
-9. List All Courses
-10. List All Students
-0. Exit
+1. Add Student              - Create new undergraduate or graduate student
+2. Add Course               - Create course with level/field restrictions
+3. Enroll Student in Course - Enroll eligible students in courses
+4. Set Grade for Student    - Assign grades (0-100) to enrolled students
+5. List Students in Course  - View all students enrolled in a course
+6. Show Student Transcript  - Display student's grades and academic status
+7. Update Course            - Modify course details
+8. Remove Student from Course - Unenroll a student
+9. List All Courses         - View all available courses
+10. List All Students       - View all registered students
+0. Exit                     - Close the application
 ```
 
-### Workflow
+## Data Models
 
-1. **Add Students**: Provide name (letters only), ID, gender, email, level, and field of study
-2. **Add Courses**: Provide course title and unique course ID. Optionally specify allowed levels or fields
-3. **Enroll Students**: Students can enroll in multiple courses, respecting allowed levels/fields
-4. **Set Grades**: Assign grades per course (0–100)
-5. **View Transcript**: Shows all courses, grades, total average, and academic status
-6. **List Students in a Course**: Displays enrolled students and their grades
-7. **Update Course**: Change the course title
-8. **Remove Student**: Remove a student from a specific course
+### Student (Abstract Base Class)
+**Attributes:**
+- `name`: Student's full name (letters and spaces only)
+- `student_id`: Unique identifier
+- `gender`: Male or female
+- `email`: Valid email address
+- `level`: UNDERGRADUATE or GRADUATE
+- `field_of_studies`: Academic field (Science, Arts, Commerce, Engineering, Medicine, Law)
+- `course_grades`: Dictionary of course grades
 
----
+**Subclasses:**
+- `Undergraduate`: Students at undergraduate level
+- `Graduate`: Students at graduate level
 
-##  Example Usage
+### Course
+**Attributes:**
+- `title`: Course name (letters and spaces only)
+- `course_id`: Unique course identifier
+- `allowed_levels`: List of eligible student levels
+- `allowed_fields`: List of eligible fields of study
+- `enrollments`: List of enrolled students with grades
+
+**Methods:**
+- `enroll(student)`: Enroll a student if eligible
+- `set_grade(student, grade)`: Assign grade (0-100)
+- `remove_student(student)`: Unenroll a student
+- `list_students()`: Display all enrolled students
+- `average_grade()`: Calculate course average
+
+### Enrollment
+Represents the relationship between a student and a course, storing the grade.
+
+## Examples
 
 ### Adding a Student
-
 ```
 Select an option: 1
-Name: Alice Johnson
-Student ID: U123
-Gender (male/female): female
-Email: alice@gmail.com
-Level (undergraduate/graduate): undergraduate
-Field of study: Computer Science
-
-✔ Student added: Alice Johnson - Undergraduate in Computer Science
+Name: John Doe
+Student ID: ST001
+Gender: male
+Email: john.doe@university.edu
+Available Levels: ['undergraduate', 'graduate']
+Level: undergraduate
+Available Fields: ['science', 'arts', 'commerce', 'engineering', 'medicine', 'law']
+Field of study: engineering
+Student added: John Doe (undergraduate)
 ```
 
-### Adding a Course
-
+### Adding a Course with Multiple Fields
 ```
 Select an option: 2
-Course Title: Introduction to Programming
-Course ID: CS101
-Allowed Level (undergraduate/graduate/all): undergraduate
-Allowed Field (or press Enter for all): Computer Science
-
-✔ Course added: Introduction to Programming (CS101)
-```
-
-### Enrolling a Student
-
-```
-Select an option: 3
-Student ID: U123
-Course ID: CS101
-
-✔ Alice Johnson enrolled in Introduction to Programming
-```
-
-### Setting a Grade
-
-```
-Select an option: 4
-Student ID: U123
-Course ID: CS101
-Grade (0-100): 85
-
-✔ Grade set: Alice Johnson scored 85 in Introduction to Programming
+Course title: Advanced Mathematics
+Course ID: MATH301
+Available Levels: ['undergraduate', 'graduate']
+Allowed Level(s) [separate multiple with comma, or type 'all']: graduate
+Available Fields: ['science', 'arts', 'commerce', 'engineering', 'medicine', 'law']
+Allowed Field(s) [separate multiple with comma, or type 'all']: science,engineering
+Course added: Advanced Mathematics (MATH301)
+  Allowed Levels: ['graduate']
+  Allowed Fields: ['science', 'engineering']
 ```
 
 ### Viewing Student Transcript
-
 ```
 Select an option: 6
-Student ID: U123
+Student ID: ST001
 
-========================================
-TRANSCRIPT - Alice Johnson (U123)
-Undergraduate - Computer Science
-========================================
-
-Course: Introduction to Programming (CS101)
-Grade: 85
-
-Course: Data Structures (CS102)
-Grade: 78
-
-----------------------------------------
-Total Average: 81.5
+Transcript - John Doe (ST001)
+---------------------------------------------
+MATH301: 85
+PHY201: 78
+ENG101: Not yet graded
+---------------------------------------------
+Total Average: 81.50
 Academic Status: First Class
-========================================
 ```
 
----
+## Academic Status Classification
 
-##  Key Features Explained
+| Average Grade | Classification |
+|--------------|----------------|
+| 80-100 | First Class |
+| 70-79 | Second Upper Class |
+| 60-69 | Second Lower Class |
+| 50-59 | Pass |
+| 0-49 | Fail |
 
-### Input Validation
+## Validation Rules
 
-- **Name**: Require
-- **Gender**: Must be exactly "male" or "female"
+### Student Validation
+- **Name**: Cannot be empty, letters and spaces only
+- **Student ID**: Cannot be empty
+- **Gender**: Must be "male" or "female"
 - **Email**: Must contain "@" and "."
-- **Grade**: Must be between 0 and 100
-- **Student ID**: Must be unique
+- **Level**: Must be valid Level enum (UNDERGRADUATE or GRADUATE)
+- **Field of Study**: Must be valid FieldOfStudy enum
 
-### Course Restrictions
+### Course Validation
+- **Title**: Cannot be empty, letters and spaces only
+- **Allowed Levels**: Must be a list of Level enums
+- **Allowed Fields**: Must be a list of FieldOfStudy enums
 
-Courses can be restricted by:
-- **Level**: Undergraduate-only, Graduate-only, or open to all
-- **Field of Study**: Specific field requirements or open to all
+### Grade Validation
+- Must be a number between 0 and 100
+- Student must be enrolled in the course
 
-Students can only enroll if they meet the course requirements.
+### Enrollment Validation
+- Student's level must match course's allowed levels
+- Student's field must match course's allowed fields
+- Student cannot be enrolled twice in the same course
 
-### Academic Status Classification
+## Technical Implementation Details
 
-| Grade Range | Status |
-|-------------|--------|
-| 70–100 | First Class |
-| 60–69 | Second Upper |
-| 50–59 | Second Lower |
-| 40–49 | Pass |
-| 0–39 | Fail |
+### Key Problem Solved: Property Setter Validation
 
----
-
-
-
-##  Future Enhancements
-
-- [ ] Export transcripts to PDF
-- [ ] Pretty table formatting using tabulate
-- [ ] Database integration (SQLite/PostgreSQL)
-- [ ] GUI interface (Tkinter/PyQt)
-- [ ] GPA calculation (weighted credits)
-- [ ] Student search and filter functionality
-- [ ] Email notifications for grades
-- [ ] Course capacity limits
-- [ ] Waitlist management
-
----
-
-##  Contributing
-
-Contributions are welcome! Here's how you can help:
-
-1. Fork the repository
-2. Create a new branch (`git checkout -b feature/your-feature`)
-3. Commit your changes (`git commit -m 'Add some feature'`)
-4. Push to the branch (`git push origin feature/your-feature`)
-5. Open a Pull Request
-
-### Contribution Guidelines
-
-- Follow PEP 8 style guide
-- Add docstrings to all functions and classes
-- Include unit tests for new features
-- Update README.md if needed
-
----
-
-##  Testing
-
-To run tests (if implemented):
-
-```bash
-python -m pytest tests/
+**Problem Encountered:**
+Initially, the `__init__` constructor was directly assigning values to private attributes:
+```python
+def __init__(self, name, student_id, gender, email, ...):
+    self._name = name          
+    self._student_id = student_id
+    self._gender = gender
+    self._email = email
 ```
 
+This approach **completely bypassed all property setter validations**, allowing invalid data to be stored:
+- Empty names were accepted
+- Invalid emails like "a@." were stored
+- Any gender value was allowed
+- No validation occurred at object creation time
+
+**Root Cause:**
+When you assign directly to `self._name`, Python treats it as a direct attribute assignment to the private variable, **not** as a call to the `name` property setter. The setter validation code was never executed.
+
+**Solution:**
+The constructor was modified to call the **property setters** instead of directly assigning to private attributes:
+```python
+def __init__(self, name, student_id, gender, email, ...):
+    self.name = name               # Calls name.setter with validation
+    self.gender = gender           # Calls gender.setter
+    self.email = email             # Calls email.setter
+```
+
+When you assign to `self.name`, Python automatically calls the `name.setter` method, which:
+1. Runs all validation checks
+2. Raises `ValueError` if data is invalid
+3. Assigns to `self._name` only if validation passes
+
+**Key Lesson:**
+- Use `self.name = value` in `__init__` to trigger setter validation
+- **Never** use `self._name = value` in `__init__` (bypasses validation)
+- Private attributes (`_name`, `_email`) are still used internally for storage
+- Setters handle both validation **and** assignment to private attributes
+- Single source of truth for validation logic (no duplication needed)
+
+
+
+### Design Patterns Used
+
+1. **Abstract Base Class**: `Student` is abstract with `Undergraduate` and `Graduate` subclasses
+2. **Encapsulation**: Private attributes with property decorators for controlled access
+3. **Composition**: `Course` contains `Enrollment` objects which reference `Student` objects
+4. **Enumeration**: Type-safe level and field of study definitions
+5. **Property Decorators**: Validation through getters and setters without duplication
+
+## Error Handling
+
+The system provides clear error messages for:
+- Invalid input data (empty fields, wrong formats)
+- Duplicate IDs
+- Ineligible enrollments
+- Grade assignment to non-enrolled students
+- Invalid enum values
+
+Example error messages:
+```
+Error adding student: Name cannot be empty
+Error adding student: Invalid email
+Error adding student: Gender must be male or female
+```
+
+## Future Enhancements
+
+Potential features for future versions:
+- [ ] Persistent storage ( file system)
+- [ ] Search and filter functionality
+- [ ] Attendance tracking
+- [ ] Course prerequisites
+- [ ] Student and course reports
+- [ ] Export transcripts to PDF
+- [ ] Multiple grading schemes
+- [ ] Teacher/instructor management
+- [ ] Course scheduling and timetables
+
+## Contributing
+
+Contributions are welcome! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes with clear commit messages
+4. Test thoroughly
+5. Submit a pull request
+
+
+
+## Author
+
+Created as a demonstration of object-oriented programming principles in Python, including:
+- Class inheritance and polymorphism
+- Property decorators and encapsulation
+- Abstract base classes
+- Data validation best practices
+- CLI design patterns
+
 ---
 
-##  Contact
-
-For questions or feedback, please contact:  
- **ishimwediane400@gmail.com**
-
----
-
-##  Acknowledgments
-
-- Built with **Python 3.11+**
-- Inspired by real-world academic management systems
-- Thanks to all contributors and users
-
-
-### Quick Start Guide
-
-```bash
-# Clone and setup
-git clone <your-repo-url>
-cd student_course_management
-python main.py
-
-
-## Contact
-
-For questions or feedback, please contact [ishimwediane400@gmail.com]
-
-## demo video(screen recording)
- - https://drive.google.com/file/d/1Z6IDKblpJaY4GK0eY42cLaYaffbqA0zU/view?usp=sharing
+**Note**: This is an educational project demonstrating OOP concepts. For production use, consider adding:
+- Database integration (SQLite, PostgreSQL)
+- User authentication and authorization
+- Web interface (Flask/Django)
+- Unit tests and integration tests
+- Logging system
+- Configuration management

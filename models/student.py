@@ -8,7 +8,7 @@ class Student(ABC):
     def __init__(self, name, student_id, gender, email, field_of_studies: FieldOfStudy, level: Level = Level.UNDERGRADUATE):
         self._course_grades = {}
         self.name = name
-        self.student_id = student_id
+        self._student_id = student_id
         self.gender = gender
         self.email = email
         self.level = level
