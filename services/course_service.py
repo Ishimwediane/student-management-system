@@ -7,7 +7,21 @@ class CourseService:
     def add_course(courses: dict, title, course_id, allowed_field, allowed_level):
         if course_id in courses:
             raise ValueError("Course ID already exists")
-        course = Course(title, course_id, [FieldOfStudy(allowed_field)], [Level(allowed_level)])
+        
+        
+        try:
+            Level(allowed_level)
+        except ValueError:
+            raise ValueError("Invalid level")
+        
+        fields=[]
+        for field in allowed_field.split(","):
+            try:
+                fields.append(FieldOfStudy(field.strip()))
+            except ValueError:
+                raise ValueError("Invalid field;{field}")
+        
+        course = Course(title, course_id, fields, [Level(allowed_level)])
         courses[course_id] = course
         return course
 

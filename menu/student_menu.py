@@ -1,6 +1,7 @@
 from models.student import Undergraduate, Graduate
 from models.course import Course
 from models.enums import Level, FieldOfStudy
+from services.student_service import StudentService
 
 def add_student(students: dict):
     name = input("Name: ").strip()
@@ -16,28 +17,17 @@ def add_student(students: dict):
     print(f"Available Levels: {[lvl.value for lvl in Level]}")
     level_input = input("Level: ").strip().lower()
 
-    try:
-        level_enum = Level(level_input)
-    except ValueError:
-        print(f"Invalid level '{level_input}'.")
-        return
-
     print(f"Available Fields: {[f.value for f in FieldOfStudy]}")
     field_input = input("Field of study: ").strip().lower()
 
     try:
-        field_enum = FieldOfStudy(field_input)
-    except ValueError:
-        print(f"Invalid field '{field_input}'.")
+        student=StudentService.add_student(students, name, student_id, gender, email, level_input, field_input)
+        print(f"Student added: {student.name} ({student.student_id})")
+    
+    except ValueError as e:
+        print(e)
         return
-
-    if level_enum == Level.UNDERGRADUATE:
-        student = Undergraduate(name, student_id, gender, email, field_enum)
-    else:
-        student = Graduate(name, student_id, gender, email, field_enum)
-
-    students[student_id] = student
-    print(f"Student added: {student.name} ({student.level.value})")
+    
 
 def show_transcript(students):
     sid = input("Student ID: ").strip()

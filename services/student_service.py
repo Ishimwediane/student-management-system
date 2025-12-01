@@ -6,11 +6,23 @@ class StudentService:
     def add_student(students: dict, name, student_id, gender, email, level_input, field_input):
         if student_id in students:
             raise ValueError("Student ID already exists")
+        
+        try:
+            level = Level(level_input)
+        except ValueError:
+            raise ValueError("Invalid level")
+        
 
-        level = Level(level_input)
-        field = FieldOfStudy(field_input)
-
-        student = Undergraduate(name, student_id, gender, email, field) if level == Level.UNDERGRADUATE else Graduate(name, student_id, gender, email, field)
+        try:
+            field = FieldOfStudy(field_input)
+        except ValueError:
+            raise ValueError("Invalid field")
+        
+        if level == Level.UNDERGRADUATE:
+            student = Undergraduate(name, student_id, gender, email, field) 
+        else:
+            student = Graduate(name, student_id, gender, email, field)
+        
         students[student_id] = student
         return student
 

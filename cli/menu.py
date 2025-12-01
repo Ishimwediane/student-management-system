@@ -27,7 +27,7 @@ def run_cli():
         for key,(value,_) in menu_options.items():
             print(f"{key}. {value}")
             
-        choice=input("select an option").strip()
+        choice=input("select an option: ").strip()
         
         action=menu_options.get(choice)
         if action:
