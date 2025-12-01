@@ -8,15 +8,17 @@ class Course:
          
         self.enrollments = []
       
-        self.title = title
+        self.title = None
         self._course_id = course_id
         self.allowed_levels = allowed_levels if allowed_levels is not None else [Level.UNDERGRADUATE, Level.GRADUATE]
         self.allowed_fields = allowed_fields if allowed_fields else list(FieldOfStudy)
 
+        self._title=title
+
     # Title property 
     @property
     def title(self):
-        return self.title
+        return self._title
 
     @title.setter
     def title(self, value):
@@ -24,7 +26,7 @@ class Course:
             raise ValueError("Course title is required")
         if not value.replace(" ", "").isalpha():
             raise ValueError("Course title can only contain letters and spaces")
-        self.title = value
+        self._title = value
 
     # Course 
     @property
@@ -34,7 +36,7 @@ class Course:
     # Allowed Levels
     @property
     def allowed_levels(self):
-        return self.allowed_levels
+        return self._allowed_levels
 
     @allowed_levels.setter
     def allowed_levels(self, value):
@@ -43,21 +45,21 @@ class Course:
             raise ValueError("allowed_levels must be a list")
         if not all(isinstance(v, Level) for v in value):
             raise ValueError("All items in allowed_levels must be Level enum instances")
-        self.allowed_levels = value
+        self._allowed_levels = value
 
     #  Allowed Fields property 
     @property
     def allowed_fields(self):
-        return self.allowed_fields
+        return self._allowed_fields
 
     @allowed_fields.setter
     def allowed_fields(self, value):
-        # FIX: Check if value is a list first
+        #  Check if value is a list first
         if not isinstance(value, list):
             raise ValueError("allowed_fields must be a list")
         if not all(isinstance(v, FieldOfStudy) for v in value):
             raise ValueError("All items in allowed_fields must be FieldOfStudy enum instances")
-        self.allowed_fields = value
+        self._allowed_fields = value
 
 
     #  Enroll a student 
@@ -72,7 +74,7 @@ class Course:
         if any(en.student == student for en in self.enrollments):
             print(f"{student.name} already enrolled")
             return
-        enrollment = Enrollment(student)
+        enrollment = Enrollment(student,self)
         self.enrollments.append(enrollment)
        
         if not hasattr(student, '_course_grades'):
@@ -107,9 +109,12 @@ class Course:
 
     #  Calculate average grade 
     def average_grade(self):
-        grades = [en.grade for en in self.enrollments if en.grade is not None]
-        return sum(grades) / len(grades) if grades else 0
-
+        return course_average(self)
+    
+    #transcript
+    def student_transcript(self, student: Student):
+        course_transcript(self, student)
+        
     # List all students
     def list_students(self):
         print(f"\nStudents in {self.title}:")
