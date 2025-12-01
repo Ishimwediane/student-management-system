@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from .student import Student
 from .enrollment import Enrollment
 from .enums import Level, FieldOfStudy
+from ..helper.course_helper import course_average, course_transcript
 
 class Course:
     def __init__(self, title, course_id, allowed_fields: list[FieldOfStudy], allowed_levels: list[Level] = None):
@@ -107,14 +108,7 @@ class Course:
         student._course_grades[self.course_id] = grade
         print(f"Grade {grade} set for {student.name} in {self.title}")
 
-    #  Calculate average grade 
-    def average_grade(self):
-        return course_average(self)
     
-    #transcript
-    def student_transcript(self, student: Student):
-        course_transcript(self, student)
-        
     # List all students
     def list_students(self):
         print(f"\nStudents in {self.title}:")

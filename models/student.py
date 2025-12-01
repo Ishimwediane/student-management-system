@@ -93,20 +93,7 @@ class Student(ABC):
         self._field_of_studies = value
 
   
-    @staticmethod
-    def academic_status(self):
-        avg = self.total_average()
-        if avg >= 80:
-            return "First Class"
-        elif avg >= 70:
-            return "Second Upper Class"
-        elif avg >= 60:
-            return "Second Lower Class"
-        elif avg >= 50:
-            return "Pass"
-        else:
-            return "Fail"
-        
+  
  
     def __str__(self):
         return f"{self._name} ({self._student_id}) - {self._level.value}"

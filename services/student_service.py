@@ -1,34 +1,37 @@
-from models.student import Student, Undergraduate, Graduate
+from models.student import Undergraduate, Graduate, Student
 from models.enums import Level, FieldOfStudy
 
-def add_student(students):
-    name = input("Name: ").strip()
-    student_id = input("Student ID: ").strip()
-    if student_id in students:
-        print("Student ID already exists!")
-        return
+class StudentService:
+    @staticmethod
+    def add_student(students: dict, name, student_id, gender, email, level_input, field_input):
+        if student_id in students:
+            raise ValueError("Student ID already exists")
 
-    gender = input("Gender (male/female): ").strip()
-    email = input("Email: ").strip()
-    print(f"Available levels: {[lvl.value for lvl in Level]}")
-    level_input = input("Level: ").strip().lower()
-    try:
-        level_enum = Level(level_input)
-    except ValueError:
-        print("Invalid level.")
-        return
+        level = Level(level_input)
+        field = FieldOfStudy(field_input)
 
-    print(f"Available fields: {[f.value for f in FieldOfStudy]}")
-    field_input = input("Field of study: ").strip().lower()
-    try:
-        field_enum = FieldOfStudy(field_input)
-    except ValueError:
-        print("Invalid field.")
-        return
+        student = Undergraduate(name, student_id, gender, email, field) if level == Level.UNDERGRADUATE else Graduate(name, student_id, gender, email, field)
+        students[student_id] = student
+        return student
 
-    student = Undergraduate(name, student_id, gender, email, field_enum) if level_enum == Level.UNDERGRADUATE else Graduate(name, student_id, gender, email, field_enum)
-    students[student_id] = student
-    print(f"Student added: {student}")
+    @staticmethod
+    def get_student(students: dict, student_id: str):
+        return students.get(student_id)
 
-def get_student(students: dict, student_id: str):
-    return students.get(student_id)
+    @staticmethod
+    def total_average(student: Student):
+        grades = [grade for grade in student._course_grades.values() if grade is not None]
+        return sum(grades)/len(grades) if grades else 0
+
+    @staticmethod
+    def academic_status(student: Student):
+        avg = StudentService.total_average(student)
+        if avg >= 80:
+            return "First Class"
+        elif avg >= 70:
+            return "Second Upper Class"
+        elif avg >= 60:
+            return "Second Lower Class"
+        elif avg >= 50:
+            return "Pass"
+        return "Fail"

@@ -1,32 +1,20 @@
 from models.course import Course
 from models.enums import Level, FieldOfStudy
+from models.student import Student
 
-def add_course(courses: dict):
-    title = input("Course title: ").strip()
-    course_id = input("Course ID: ").strip()
-    if course_id in courses:
-        print("Course ID already exists!")
-        return
+class CourseService:
+    @staticmethod
+    def add_course(courses: dict, title, course_id, allowed_field, allowed_level):
+        if course_id in courses:
+            raise ValueError("Course ID already exists")
+        course = Course(title, course_id, [FieldOfStudy(allowed_field)], [Level(allowed_level)])
+        courses[course_id] = course
+        return course
 
-    print(f"Available levels: {[lvl.value for lvl in Level]}")
-    level_input = input("Allowed level: ").strip().lower()
-    try:
-        level_enum = Level(level_input)
-    except ValueError:
-        print("Invalid level.")
-        return
+    @staticmethod
+    def get_course(courses: dict, course_id: str):
+        return courses.get(course_id)
 
-    print(f"Available fields: {[f.value for f in FieldOfStudy]}")
-    field_input = input("Allowed field: ").strip().lower()
-    try:
-        field_enum = FieldOfStudy(field_input)
-    except ValueError:
-        print("Invalid field.")
-        return
-
-    course = Course(title, course_id, [field_enum], [level_enum])
-    courses[course_id] = course
-    print(f"Course added: {course.title}")
-
-def get_course(courses: dict, course_id: str):
-    return courses.get(course_id)
+    @staticmethod
+    def list_students(course: Course):
+        return course.enrollments
