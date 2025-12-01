@@ -8,7 +8,7 @@ class Course:
          
         self.enrollments = []
       
-        self._title = title
+        self.title = title
         self._course_id = course_id
         self.allowed_levels = allowed_levels if allowed_levels is not None else [Level.UNDERGRADUATE, Level.GRADUATE]
         self.allowed_fields = allowed_fields if allowed_fields else list(FieldOfStudy)
@@ -16,7 +16,7 @@ class Course:
     # Title property 
     @property
     def title(self):
-        return self._title
+        return self.title
 
     @title.setter
     def title(self, value):
@@ -24,7 +24,7 @@ class Course:
             raise ValueError("Course title is required")
         if not value.replace(" ", "").isalpha():
             raise ValueError("Course title can only contain letters and spaces")
-        self._title = value
+        self.title = value
 
     # Course 
     @property
@@ -34,7 +34,7 @@ class Course:
     # Allowed Levels
     @property
     def allowed_levels(self):
-        return self._allowed_levels
+        return self.allowed_levels
 
     @allowed_levels.setter
     def allowed_levels(self, value):
@@ -43,12 +43,12 @@ class Course:
             raise ValueError("allowed_levels must be a list")
         if not all(isinstance(v, Level) for v in value):
             raise ValueError("All items in allowed_levels must be Level enum instances")
-        self._allowed_levels = value
+        self.allowed_levels = value
 
     #  Allowed Fields property 
     @property
     def allowed_fields(self):
-        return self._allowed_fields
+        return self.allowed_fields
 
     @allowed_fields.setter
     def allowed_fields(self, value):
@@ -57,7 +57,7 @@ class Course:
             raise ValueError("allowed_fields must be a list")
         if not all(isinstance(v, FieldOfStudy) for v in value):
             raise ValueError("All items in allowed_fields must be FieldOfStudy enum instances")
-        self._allowed_fields = value
+        self.allowed_fields = value
 
 
     #  Enroll a student 

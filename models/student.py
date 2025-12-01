@@ -8,7 +8,7 @@ class Student(ABC):
     def __init__(self, name, student_id, gender, email, field_of_studies: FieldOfStudy, level: Level = Level.UNDERGRADUATE):
         self._course_grades = {}
         self.name = name
-        self._student_id = student_id
+        self.student_id = student_id
         self.gender = gender
         self.email = email
         self.level = level
@@ -17,7 +17,7 @@ class Student(ABC):
     # Name
     @property
     def name(self):
-        return self._name
+        return self.name
     
     @name.setter
     def name(self, value):
@@ -25,61 +25,61 @@ class Student(ABC):
             raise ValueError("Name cannot be empty")
         if not value.replace(" ", "").isalpha():
             raise ValueError("Name can only contain letters and spaces")
-        self._name = value
+        self.name = value
 
     # Gender
     @property
     def gender(self):
-        return self._gender
+        return self.gender
     
     @gender.setter
     def gender(self, value):
         value = value.lower()
         if value not in ("male", "female"):
             raise ValueError("Gender must be male or female")
-        self._gender = value
+        self.gender = value
 
     # Email
     @property
     def email(self):
-        return self._email
+        return self.email
     
     @email.setter
     def email(self, value):
         if "@" not in value or "." not in value:
             raise ValueError("Invalid email")
-        self._email = value
+        self.email = value
 
     # Student ID
     @property
     def student_id(self):
-        return self._student_id
+        return self.student_id
     
     @student_id.setter
     def student_id(self, value):
         if not value.strip():
             raise ValueError("Student ID cannot be empty")
-        self._student_id = value
+        self.student_id = value
 
     @property
     def level(self):
-        return self._level
+        return self.level
 
     @level.setter
     def level(self, value):
         if not isinstance(value, Level):
             raise ValueError("Invalid level")
-        self._level = value
+        self.level = value
 
     @property
     def field_of_studies(self):
-        return self._field_of_studies
+        return self.field_of_studies
 
     @field_of_studies.setter
     def field_of_studies(self, value):
         if not isinstance(value, FieldOfStudy):
             raise ValueError("Invalid field of study")
-        self._field_of_studies = value
+        self.field_of_studies = value
 
     # Add course_grades property
     @property
